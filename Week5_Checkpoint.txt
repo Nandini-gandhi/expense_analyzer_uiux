@@ -34,5 +34,5 @@ Next Steps:
 * Web UI: Turn the Streamlit dashboard into a small web app (Flask or Streamlit multi-page) with file upload and saved budgets.
 * Smart Summaries: Add short insights like “Dining spend up 12% from last month”.
 * Anomaly Detection: Flag unusual transactions or big subscription changes.
-* Identify recurring subscriptions and show them as a separate category.
-* Customization (Optional, if time permits): Add an easy way for users to customize or redefine categories — for example, someone could mark Amazon separately as “Online Shopping” or split it into multiple categories. Haven’t decided the exact design yet, but it’s on the list.
+* Be able to filter each category by date and cost to see top transactions per category.
+* Customization (Optional, if time permits): Add an easy way for users to customize or redefine categories — for example, someone could mark Amazon separately as “Online Shopping” or split it into multiple categories. Build a model that could perhaps learn from the way users manually re-assign some categories, for the next time. Haven’t decided the exact design yet, but it’s on the list.
