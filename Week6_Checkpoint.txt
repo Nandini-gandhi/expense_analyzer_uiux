@@ -1,4 +1,4 @@
-Week 6 Checkpoint - Expense Analyzer
+Final Project Checkpoint 2 - Expense Analyzer
 - Nandini Gandhi
 
 How to Run:
