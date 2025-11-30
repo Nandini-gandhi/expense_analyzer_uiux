@@ -340,8 +340,14 @@ elif mode == "home":
     net_balance = total_income - total_spend
     
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Income", f"${total_income:,.2f}")
-    col2.metric("Total Spend", f"${total_spend:,.2f}")
+    if col1.button(f"💰 Total Income\n${total_income:,.2f}", key="total_income_btn", use_container_width=True):
+        st.session_state["mode"] = "category_detail"
+        st.session_state["selected_category"] = "Income"
+        st.rerun()
+    if col2.button(f"💸 Total Spend\n${total_spend:,.2f}", key="total_spend_btn", use_container_width=True):
+        st.session_state["mode"] = "category_detail"
+        st.session_state["selected_category"] = "All Expenses"
+        st.rerun()
     col3.metric("Net Balance", f"${net_balance:,.2f}", delta=f"{net_balance:,.2f}")
     col4.metric("Transactions", f"{total_txns:,}")
     
@@ -373,18 +379,6 @@ elif mode == "home":
         else:
             st.info("No merchants match your search.")
     else:
-        # Income section
-        if len(income_df) > 0:
-            st.subheader("💰 Income")
-            total_income_display = income_df["amount_signed"].sum()
-            income_count = len(income_df)
-            
-            if st.button(f"**Total Income** · ${total_income_display:,.2f} ({income_count} transactions)", key="income_detail"):
-                st.session_state["mode"] = "category_detail"
-                st.session_state["selected_category"] = "Income"
-                st.rerun()
-            st.markdown("---")
-        
         # Category breakdown (expenses only)
         cat_summary = (
             expense_df.groupby("category")
@@ -475,6 +469,15 @@ elif mode == "category_detail":
         ].copy()
         # For income, show amount_signed (positive values) instead of amount_spend
         cat_df["display_amount"] = cat_df["amount_signed"]
+    elif selected_category == "All Expenses":
+        # Show all expenses (all categories except Income and EXCLUDE)
+        cat_df = df[
+            (df["category"] != "Income") &
+            (df["category"] != "EXCLUDE") &
+            (df["date"] >= start_d) & (df["date"] <= end_d) &
+            (df["amount_spend"] >= min_amt) & (df["amount_spend"] <= max_amt)
+        ].copy()
+        cat_df["display_amount"] = cat_df["amount_spend"]
     else:
         cat_df = df[
             (df["category"] == selected_category) &
@@ -513,8 +516,13 @@ elif mode == "category_detail":
         st.markdown("---")
         
         st.subheader("📋 Transactions")
-        display = cat_df[["date", "merchant", "display_amount", "description"]].copy()
-        display.columns = ["Date", "Merchant", "Amount", "Description"]
+        # Show category column only for 'All Expenses' view
+        if selected_category == "All Expenses":
+            display = cat_df[["date", "merchant", "display_amount", "category", "description"]].copy()
+            display.columns = ["Date", "Merchant", "Amount", "Category", "Description"]
+        else:
+            display = cat_df[["date", "merchant", "display_amount", "description"]].copy()
+            display.columns = ["Date", "Merchant", "Amount", "Description"]
         display["Amount"] = display["Amount"].apply(lambda x: f"${x:,.2f}")
         st.dataframe(display, use_container_width=True, hide_index=True)
         
