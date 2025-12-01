@@ -12,12 +12,7 @@ interface OverviewCardsProps {
 }
 
 export function OverviewCards({ onIncomeClick, onSpendClick, startDate, endDate, source }: OverviewCardsProps) {
-  const [summary, setSummary] = useState<Summary>({
-    total_income: 0,
-    total_spend: 0,
-    net_balance: 0,
-    total_transactions: 0
-  });
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +34,7 @@ export function OverviewCards({ onIncomeClick, onSpendClick, startDate, endDate,
   const cards = [
     {
       label: 'Total Income',
-      value: loading ? '...' : `$${summary.total_income.toFixed(2)}`,
+      value: loading || !summary ? '...' : `$${summary.total_income.toFixed(2)}`,
       icon: DollarSign,
       color: 'from-emerald-400 to-green-500',
       delay: 0.3,
@@ -47,7 +42,7 @@ export function OverviewCards({ onIncomeClick, onSpendClick, startDate, endDate,
     },
     {
       label: 'Total Spend',
-      value: loading ? '...' : `$${summary.total_spend.toFixed(2)}`,
+      value: loading || !summary ? '...' : `$${summary.total_spend.toFixed(2)}`,
       icon: TrendingDown,
       color: 'from-rose-400 to-red-500',
       delay: 0.4,
@@ -55,16 +50,16 @@ export function OverviewCards({ onIncomeClick, onSpendClick, startDate, endDate,
     },
     {
       label: 'Net Balance',
-      value: loading ? '...' : `$${summary.net_balance.toFixed(2)}`,
-      subtitle: loading ? '' : `${summary.net_balance.toFixed(2)}`,
+      value: loading || !summary ? '...' : `$${summary.net_balance.toFixed(2)}`,
+      subtitle: loading || !summary ? '' : `${summary.net_balance.toFixed(2)}`,
       icon: Wallet,
       color: 'from-amber-400 to-orange-500',
-      negative: summary.net_balance < 0,
+      negative: summary ? summary.net_balance < 0 : false,
       delay: 0.5
     },
     {
       label: 'Transactions',
-      value: loading ? '...' : `${summary.total_transactions}`,
+      value: loading || !summary ? '...' : `${summary.total_transactions}`,
       icon: Receipt,
       color: 'from-blue-400 to-cyan-500',
       delay: 0.6
