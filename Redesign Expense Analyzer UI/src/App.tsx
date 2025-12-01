@@ -30,13 +30,18 @@ export default function App() {
   const [hasFiles, setHasFiles] = useState<boolean | null>(null); // null = loading, true/false = result
   const [chatOpen, setChatOpen] = useState(false);
   
-  // Check if files exist on mount
-  useEffect(() => {
+  // Function to check files
+  const checkFiles = () => {
     listFiles().then(data => {
       setHasFiles(data.files && data.files.length > 0);
     }).catch(() => {
       setHasFiles(false);
     });
+  };
+  
+  // Check if files exist on mount
+  useEffect(() => {
+    checkFiles();
   }, []);
   
   // Load date range from backend on mount
@@ -90,7 +95,7 @@ export default function App() {
 
   // Show onboarding if no files exist
   if (hasFiles === false) {
-    return <OnboardingPage onComplete={() => setHasFiles(true)} />;
+    return <OnboardingPage onComplete={() => checkFiles()} />;
   }
 
   // Render settings page
