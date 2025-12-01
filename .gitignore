@@ -4,10 +4,27 @@ __pycache__/
 
 # venv
 .venv/
+venv/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+backend.log
 
 # data outputs
 data/clean/
 reports/plots/
+
+# IDE
+.vscode/
+
+# Node modules
+node_modules/
+Redesign Expense Analyzer UI/node_modules/
+Redesign Expense Analyzer UI/dist/
 
 # os
 .DS_Store
