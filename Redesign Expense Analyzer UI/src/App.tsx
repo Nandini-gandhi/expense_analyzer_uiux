@@ -28,6 +28,10 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'main' | 'category' | 'forecast' | 'allExpenses' | 'income' | 'settings'>('main');
   const [selectedCategory, setSelectedCategory] = useState<{ name: string; emoji: string; color: string } | null>(null);
   const [hasFiles, setHasFiles] = useState<boolean | null>(null); // null = loading, true/false = result
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
+    // Check if user has completed onboarding before
+    return localStorage.getItem('onboarding_completed') !== 'true';
+  });
   const [chatOpen, setChatOpen] = useState(false);
   
   // Function to check files
@@ -93,9 +97,13 @@ export default function App() {
     );
   }
 
-  // Show onboarding if no files exist
-  if (hasFiles === false) {
-    return <OnboardingPage onComplete={() => checkFiles()} />;
+  // Show onboarding if user hasn't completed it OR no files exist
+  if (showOnboarding || hasFiles === false) {
+    return <OnboardingPage onComplete={() => {
+      localStorage.setItem('onboarding_completed', 'true');
+      setShowOnboarding(false);
+      checkFiles();
+    }} />;
   }
 
   // Render settings page

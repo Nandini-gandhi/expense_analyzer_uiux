@@ -20,6 +20,24 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
     }
   };
 
+  const handleUseDemoData = async () => {
+    try {
+      setUploading(true);
+      setError(null);
+      
+      // Fetch the demo CSV file
+      const response = await fetch('/demo-transactions.csv');
+      const blob = await response.blob();
+      const file = new File([blob], 'demo-transactions.csv', { type: 'text/csv' });
+      
+      await uploadFiles([file]);
+      onComplete();
+    } catch (err: any) {
+      setError(err.message || 'Failed to load demo data');
+      setUploading(false);
+    }
+  };
+
   const handleStartAnalyzing = async () => {
     if (selectedFile.length === 0) return;
 
@@ -27,8 +45,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       setUploading(true);
       setError(null);
       await uploadFiles(selectedFile);
-      // Reload the page to show the dashboard with the new data
-      window.location.reload();
+      onComplete();
     } catch (err: any) {
       setError(err.message || 'Failed to upload file');
       setUploading(false);
@@ -213,6 +230,31 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
                 {uploading ? 'Uploading and processing...' : selectedFile.length > 0 ? 'Start Analyzing' : 'Upload files to continue'}
               </span>
               {selectedFile.length > 0 && !uploading && <ArrowRight className="w-5 h-5" style={{ color: '#ffffff' }} />}
+            </motion.button>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 my-6">
+              <div className="flex-1 h-px bg-slate-300" />
+              <span className="text-slate-500 text-sm">or</span>
+              <div className="flex-1 h-px bg-slate-300" />
+            </div>
+
+            {/* Demo Button */}
+            <motion.button
+              whileHover={!uploading ? { scale: 1.02 } : {}}
+              whileTap={!uploading ? { scale: 0.98 } : {}}
+              onClick={handleUseDemoData}
+              disabled={uploading}
+              className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 border-2 ${
+                !uploading
+                  ? 'border-blue-500 text-blue-600 hover:bg-blue-50 cursor-pointer'
+                  : 'border-slate-300 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              <span style={{ fontWeight: '500' }}>
+                {uploading ? 'Loading demo data...' : 'Try with Demo Data'}
+              </span>
+              {!uploading && <ArrowRight className="w-5 h-5" />}
             </motion.button>
           </motion.div>
         </motion.div>
