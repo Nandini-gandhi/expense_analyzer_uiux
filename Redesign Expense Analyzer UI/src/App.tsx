@@ -38,6 +38,18 @@ export default function App() {
   const goToDashboard = () => {
     window.location.hash = '#dashboard';
     setPage('dashboard');
+    // Force reload date range after upload
+    setTimeout(() => {
+      getDateRange().then(range => {
+        if (range.min_date && range.max_date) {
+          const maxDate = new Date(range.max_date);
+          const monthStart = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+          const monthEnd = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 0);
+          setStartDate(formatDate(monthStart));
+          setEndDate(formatDate(monthEnd));
+        }
+      }).catch(console.error);
+    }, 500);
   };
   
   // Load date range from backend on mount
