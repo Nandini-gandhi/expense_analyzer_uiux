@@ -246,12 +246,15 @@ export default function App() {
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-6xl text-slate-800" style={{ fontFamily: "Crimson Pro, serif" }}>Expense Analyzer</h1>
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="glass-card p-3 rounded-xl hover:bg-white/60 transition-all"
+                className="glass-card px-5 py-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg group"
                 onClick={handleSettingsClick}
               >
-                <Menu className="w-6 h-6 text-slate-700" />
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-700 group-hover:text-white font-medium transition-colors">Features</span>
+                  <Menu className="w-6 h-6 text-slate-700 group-hover:text-white transition-colors" />
+                </div>
               </motion.button>
             </div>
             <div style={{ height: '6px' }} className="w-32 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" />
