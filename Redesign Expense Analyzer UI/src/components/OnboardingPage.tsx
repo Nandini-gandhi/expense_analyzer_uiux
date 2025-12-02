@@ -27,8 +27,8 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       setUploading(true);
       setError(null);
       await uploadFiles(selectedFile);
-      // Reload the page to show the dashboard with the new data
-      window.location.reload();
+      // Call the onComplete callback to update parent state
+      onComplete();
     } catch (err: any) {
       setError(err.message || 'Failed to upload file');
       setUploading(false);
