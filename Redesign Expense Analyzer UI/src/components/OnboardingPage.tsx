@@ -10,6 +10,7 @@ interface OnboardingPageProps {
 export function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const [selectedFile, setSelectedFile] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,12 +27,35 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
     try {
       setUploading(true);
       setError(null);
+      setUploadStatus('Connecting to server...');
+      
+      // First, ping the health endpoint to wake up the backend if needed
+      try {
+        const healthCheck = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/health`, {
+          method: 'GET',
+        });
+        if (healthCheck.ok) {
+          setUploadStatus('Processing your files...');
+        }
+      } catch (e) {
+        setUploadStatus('Server is waking up (may take 30-60 seconds)...');
+        // Wait a bit and try again
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
+      
       await uploadFiles(selectedFile);
+      setUploadStatus('Complete!');
       // Call the onComplete callback to update parent state
       onComplete();
     } catch (err: any) {
-      setError(err.message || 'Failed to upload file');
+      const errorMessage = err.message || 'Failed to upload file';
+      if (errorMessage.includes('fetch') || errorMessage.includes('Failed to fetch')) {
+        setError('Unable to connect to server. The backend may be waking up (this can take up to 60 seconds on first load). Please wait a moment and try again.');
+      } else {
+        setError(errorMessage);
+      }
       setUploading(false);
+      setUploadStatus('');
     }
   };
 
@@ -210,7 +234,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
               }`}
             >
               <span style={{ color: '#ffffff', fontWeight: '500' }}>
-                {uploading ? 'Uploading and processing...' : selectedFile.length > 0 ? 'Start Analyzing' : 'Upload files to continue'}
+                {uploading ? (uploadStatus || 'Processing...') : selectedFile.length > 0 ? 'Start Analyzing' : 'Upload files to continue'}
               </span>
               {selectedFile.length > 0 && !uploading && <ArrowRight className="w-5 h-5" style={{ color: '#ffffff' }} />}
             </motion.button>
