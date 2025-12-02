@@ -15,6 +15,11 @@ import { ChatBot } from './components/ChatBot';
 import { getDateRange, listFiles } from './services/api';
 
 export default function App() {
+  // Check URL hash to determine page
+  const [page, setPage] = useState<'onboarding' | 'dashboard'>(() => {
+    return window.location.hash === '#dashboard' ? 'dashboard' : 'onboarding';
+  });
+  
   // Get current month as default
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -27,29 +32,13 @@ export default function App() {
   const [selectedSource, setSelectedSource] = useState('All');
   const [currentView, setCurrentView] = useState<'main' | 'category' | 'forecast' | 'allExpenses' | 'income' | 'settings'>('main');
   const [selectedCategory, setSelectedCategory] = useState<{ name: string; emoji: string; color: string } | null>(null);
-  const [hasFiles, setHasFiles] = useState<boolean | null>(null); // null = loading, true/false = result
   const [chatOpen, setChatOpen] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null); // Track if user has seen onboarding
   
-  // Check if this is first visit
-  useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-    setShowOnboarding(hasSeenOnboarding !== 'true');
-  }, []);
-  
-  // Function to check files
-  const checkFiles = () => {
-    listFiles().then(data => {
-      setHasFiles(data.files && data.files.length > 0);
-    }).catch(() => {
-      setHasFiles(false);
-    });
+  // Function to navigate to dashboard
+  const goToDashboard = () => {
+    window.location.hash = '#dashboard';
+    setPage('dashboard');
   };
-  
-  // Check if files exist on mount
-  useEffect(() => {
-    checkFiles();
-  }, []);
   
   // Load date range from backend on mount
   useEffect(() => {
@@ -91,22 +80,9 @@ export default function App() {
     setSelectedCategory(null);
   };
 
-  // Show loading while checking for files or first visit
-  if (hasFiles === null || showOnboarding === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f9ff] via-[#e0f2fe] to-[#dbeafe]">
-        <div className="text-slate-600 text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  // Show onboarding if it's first visit or no files exist
-  if (showOnboarding || hasFiles === false) {
-    return <OnboardingPage onComplete={() => {
-      localStorage.setItem('hasSeenOnboarding', 'true');
-      setShowOnboarding(false);
-      checkFiles();
-    }} />;
+  // Show onboarding page
+  if (page === 'onboarding') {
+    return <OnboardingPage onComplete={goToDashboard} />;
   }
 
   // Render settings page
