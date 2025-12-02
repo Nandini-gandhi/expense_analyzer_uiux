@@ -220,7 +220,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
               whileTap={selectedFile.length > 0 && !uploading ? { scale: 0.98 } : {}}
               onClick={handleStartAnalyzing}
               disabled={selectedFile.length === 0 || uploading}
-              className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 mt-6 ${
+              className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 mt-6 shadow-lg ${
                 selectedFile.length > 0 && !uploading
                   ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 cursor-pointer'
                   : 'bg-slate-300 cursor-not-allowed'
@@ -233,9 +233,9 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
             </motion.button>
 
             {/* Divider */}
-            <div className="flex items-center gap-4 my-6">
+            <div className="flex items-center gap-4 my-8">
               <div className="flex-1 h-px bg-slate-300" />
-              <span className="text-slate-500 text-sm">or</span>
+              <span className="text-slate-500 text-sm font-medium">or</span>
               <div className="flex-1 h-px bg-slate-300" />
             </div>
 
@@ -245,10 +245,10 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
               whileTap={!uploading ? { scale: 0.98 } : {}}
               onClick={handleUseDemoData}
               disabled={uploading}
-              className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 border-2 ${
+              className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg ${
                 !uploading
-                  ? 'border-blue-500 text-blue-600 hover:bg-blue-50 cursor-pointer'
-                  : 'border-slate-300 text-slate-400 cursor-not-allowed'
+                  ? 'bg-white border-2 border-blue-500 text-blue-600 hover:bg-blue-50 cursor-pointer'
+                  : 'bg-slate-200 border-2 border-slate-300 text-slate-400 cursor-not-allowed'
               }`}
             >
               <span style={{ fontWeight: '500' }}>
