@@ -28,11 +28,14 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'main' | 'category' | 'forecast' | 'allExpenses' | 'income' | 'settings'>('main');
   const [selectedCategory, setSelectedCategory] = useState<{ name: string; emoji: string; color: string } | null>(null);
   const [hasFiles, setHasFiles] = useState<boolean | null>(null); // null = loading, true/false = result
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
-    // Check if user has completed onboarding before
-    return localStorage.getItem('onboarding_completed') !== 'true';
-  });
   const [chatOpen, setChatOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null); // Track if user has seen onboarding
+  
+  // Check if this is first visit
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    setShowOnboarding(hasSeenOnboarding !== 'true');
+  }, []);
   
   // Function to check files
   const checkFiles = () => {
@@ -88,8 +91,8 @@ export default function App() {
     setSelectedCategory(null);
   };
 
-  // Show loading while checking for files
-  if (hasFiles === null) {
+  // Show loading while checking for files or first visit
+  if (hasFiles === null || showOnboarding === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f9ff] via-[#e0f2fe] to-[#dbeafe]">
         <div className="text-slate-600 text-lg">Loading...</div>
@@ -97,10 +100,10 @@ export default function App() {
     );
   }
 
-  // Show onboarding if user hasn't completed it OR no files exist
+  // Show onboarding if it's first visit or no files exist
   if (showOnboarding || hasFiles === false) {
     return <OnboardingPage onComplete={() => {
-      localStorage.setItem('onboarding_completed', 'true');
+      localStorage.setItem('hasSeenOnboarding', 'true');
       setShowOnboarding(false);
       checkFiles();
     }} />;
